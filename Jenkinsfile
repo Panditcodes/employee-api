@@ -53,8 +53,9 @@ pipeline {
                 echo '🐳 Building Docker image...'
                 bat "docker build -t employee-api:latest %PROJECT_DIR%"
                 // Uncomment these lines after logging into Docker Hub:
-                bat "docker tag employee-api:latest your-dockerhub-username/employee-api:latest"
-                bat "docker push your-dockerhub-username/employee-api:latest"
+                bat "docker tag employee-api:latest panditcodes/employee-api:latest"
+                bat "docker push panditcodes/employee-api:latest"
+
             }
         }
     }
