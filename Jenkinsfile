@@ -41,6 +41,18 @@ pipeline {
             }
         }
 
+        stage('Kill Existing App') {
+            steps {
+                echo '🛑 Killing existing process on port 9090 (if any)...'
+                bat '''
+                for /f "tokens=5" %%a in ('netstat -aon ^| findstr :9090 ^| findstr LISTENING') do (
+                    echo Killing process ID %%a
+                    taskkill /PID %%a /F
+                )
+                '''
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo '🚀 Deploying the application...'
@@ -54,7 +66,6 @@ pipeline {
                 bat "docker build -t employee-api:latest %PROJECT_DIR%"
                 bat "docker tag employee-api:latest panditcodes/employee-api:latest"
                 bat "docker push panditcodes/employee-api:latest"
-
             }
         }
     }
