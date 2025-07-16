@@ -59,7 +59,7 @@ pipeline {
                 bat "start /min cmd /c \"cd %PROJECT_DIR% && java -jar target\\employee-api-1.0.0.jar\""
             }
         }
-
+//facing issues here
         stage('Docker Build & Push') {
             steps {
                 echo '🐳 Dockerizing the app...'
