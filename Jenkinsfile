@@ -47,22 +47,23 @@ pipeline {
                 bat '''
                 for /f "tokens=5" %%a in ('netstat -aon ^| findstr :9090 ^| findstr LISTENING') do (
                     echo Killing PID %%a
-                    taskkill /F /PID %%a
+                    taskkill /F /PID %%a || echo PID %%a already stopped.
                 )
+                exit /b 0
                 '''
             }
         }
 
         stage('Deploy') {
             steps {
-                echo '🚀 Deploying the application...'
+                echo '🚀 Deploying app in background...'
                 bat "start /min cmd /c \"cd %PROJECT_DIR% && java -jar target\\employee-api-1.0.0.jar\""
             }
         }
-//facing issues here
+
         stage('Docker Build & Push') {
             steps {
-                echo '🐳 Dockerizing the app...'
+                echo '🐳 Dockerizing...'
                 bat "docker build -t employee-api:latest %PROJECT_DIR%"
                 bat "docker tag employee-api:latest panditcodes/employee-api:latest"
                 bat "docker push panditcodes/employee-api:latest"
@@ -72,10 +73,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build & Deployment successful!'
+            echo '✅ Build Successful!'
         }
         failure {
-            echo '❌ Build failed.'
+            echo '❌ Build Failed!'
         }
     }
 }
