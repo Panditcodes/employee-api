@@ -43,10 +43,10 @@ pipeline {
 
         stage('Kill Existing App') {
             steps {
-                echo '🛑 Killing existing process on port 9090 (if any)...'
+                echo '🛑 Killing process on port 9090 if already running...'
                 bat '''
                 for /f "tokens=5" %%a in ('netstat -aon ^| findstr :9090 ^| findstr LISTENING') do (
-                    echo Killing process ID %%a
+                    echo Killing PID %%a
                     taskkill /PID %%a /F
                 )
                 '''
@@ -55,7 +55,7 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo '🚀 Deploying the application...'
+                echo '🚀 Deploying application...'
                 bat "cd %PROJECT_DIR% && java -jar target\\employee-api-1.0.0.jar"
             }
         }
@@ -72,10 +72,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build successful!'
+            echo '✅ Build Successful!'
         }
         failure {
-            echo '❌ Build failed.'
+            echo '❌ Build Failed!'
         }
     }
 }
