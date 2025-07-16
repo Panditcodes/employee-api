@@ -43,26 +43,26 @@ pipeline {
 
         stage('Kill Existing App') {
             steps {
-                echo '🛑 Killing process on port 9090 if already running...'
+                echo '🛑 Killing any existing process on port 9090...'
                 bat '''
-                for /f "tokens=5" %%a in ('netstat -aon ^| findstr :9090 ^| findstr LISTENING') do (
-                    echo Killing PID %%a
-                    taskkill /PID %%a /F
-                )
+                    for /f "tokens=5" %%a in ('netstat -aon ^| findstr :9090 ^| findstr LISTENING') do (
+                        echo Killing PID %%a
+                        taskkill /F /PID %%a
+                    )
                 '''
             }
         }
 
         stage('Deploy') {
             steps {
-                echo '🚀 Deploying application...'
-                bat "cd %PROJECT_DIR% && java -jar target\\employee-api-1.0.0.jar"
+                echo '🚀 Deploying the application...'
+                bat "start /B java -jar %PROJECT_DIR%\\target\\employee-api-1.0.0.jar"
             }
         }
 
         stage('Docker Build & Push') {
             steps {
-                echo '🐳 Building Docker image...'
+                echo '🐳 Building and pushing Docker image...'
                 bat "docker build -t employee-api:latest %PROJECT_DIR%"
                 bat "docker tag employee-api:latest panditcodes/employee-api:latest"
                 bat "docker push panditcodes/employee-api:latest"
@@ -72,10 +72,10 @@ pipeline {
 
     post {
         success {
-            echo '✅ Build Successful!'
+            echo '✅ Build & Deploy successful!'
         }
         failure {
-            echo '❌ Build Failed!'
+            echo '❌ Build failed.'
         }
     }
 }
